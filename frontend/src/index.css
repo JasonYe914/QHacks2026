@@ -1,0 +1,71 @@
+/* Dark theme only — muted grays, soft contrast */
+:root {
+  --bg: #1a1b1e;
+  --bg-panel: #222328;
+  --bg-node: #2c2d32;
+  --border: #3d3e42;
+  --text: #e4e4e7;
+  --text-muted: #a1a1aa;
+  --accent: #71717a;
+  --completed: #3f3f46;
+  --unlocked: #27272a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+button:hover {
+  background: var(--border);
+}
+
+input, textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* React Flow overrides for dark canvas */
+.react-flow__background { background: var(--bg) !important; }
+.react-flow__minimap { background: var(--bg-panel) !important; }
+.react-flow__controls button { background: var(--bg-node) !important; color: var(--text) !important; border-color: var(--border) !important; }
+
+.canvas-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
