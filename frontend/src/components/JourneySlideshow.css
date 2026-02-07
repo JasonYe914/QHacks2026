@@ -1,0 +1,121 @@
+.journey-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.journey-modal {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.journey-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.journey-empty {
+  padding: 40px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.journey-slide {
+  padding: 24px 20px;
+  min-height: 200px;
+}
+
+.journey-counter {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.journey-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.journey-content .proof-type-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--bg-node);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  margin-bottom: 12px;
+}
+
+.journey-content img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.journey-content .file-fallback {
+  display: block;
+  margin-top: 8px;
+}
+
+.journey-content .file-fallback.hidden {
+  display: none;
+}
+
+.journey-content a {
+  color: var(--text);
+  word-break: break-all;
+}
+
+.journey-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.journey-dots .dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+}
+
+.journey-dots .dot.active {
+  background: var(--text-muted);
+}
+
+.proof-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.proof-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
