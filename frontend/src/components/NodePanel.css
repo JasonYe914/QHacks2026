@@ -81,7 +81,44 @@
   text-transform: capitalize;
 }
 
+.proof-form .proof-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.proof-form .proof-block.extra-proof {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.proof-required {
+  color: var(--text);
+  font-weight: 500;
+  margin: 0 0 4px;
+}
+
+.proof-optional {
+  color: var(--text-muted);
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
 .proof-item a {
   color: var(--text);
   word-break: break-all;
+}
+
+.proof-photo-thumb {
+  display: block;
+  max-width: 100%;
+  max-height: 120px;
+  border-radius: 6px;
+  margin-top: 6px;
+}
+
+.proof-photo-link {
+  display: inline-block;
 }

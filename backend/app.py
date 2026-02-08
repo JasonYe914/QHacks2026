@@ -172,6 +172,11 @@ def api_submit_proof(roadmap_id, node_id):
     if not proof_type or proof_type not in ("photo", "file", "link", "reflection"):
         return jsonify({"error": "Invalid proof_type"}), 400
 
+    if proof_type == "photo":
+        f = request.files.get("file")
+        if not f or not f.filename:
+            return jsonify({"error": "Photo proof requires a file upload"}), 400
+
     file_path = None
     if "file" in request.files:
         f = request.files["file"]
@@ -213,4 +218,4 @@ def serve_upload(filename):
 
 if __name__ == "__main__":
     init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)

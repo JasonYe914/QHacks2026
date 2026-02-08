@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { RoadmapCanvas } from './components/RoadmapCanvas'
 import { NodePanel } from './components/NodePanel'
 import { JourneySlideshow } from './components/JourneySlideshow'
@@ -7,7 +7,6 @@ import './App.css'
 const API = '/api'
 
 export default function App() {
-  const [goal, setGoal] = useState('')
   const [roadmapId, setRoadmapId] = useState(null)
   const [roadmap, setRoadmap] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -15,15 +14,16 @@ export default function App() {
   const [selectedNodeId, setSelectedNodeId] = useState(null)
   const [showJourney, setShowJourney] = useState(false)
 
-  const generateRoadmap = useCallback(async () => {
-    if (!goal.trim()) return
+  const generateRoadmap = useCallback(async (goalText) => {
+    const g = (typeof goalText === 'string' ? goalText : '').trim()
+    if (!g) return
     setLoading(true)
     setError(null)
     try {
       const res = await fetch(`${API}/roadmap/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: 'default', goal: goal.trim() }),
+        body: JSON.stringify({ user_id: 'default', goal: g }),
       })
       let data
       try {
@@ -59,7 +59,7 @@ export default function App() {
     } finally {
       setLoading(false)
     }
-  }, [goal])
+  }, [])
 
   const refreshRoadmap = useCallback(async () => {
     if (!roadmapId) return
@@ -69,27 +69,17 @@ export default function App() {
 
   const allComplete = roadmap?.nodes?.every(n => n.completed) ?? false
 
+  const stubRoadmap = useMemo(() => ({
+    nodes: [{ id: 'start', title: 'Your goal', description: '', prerequisites: [], tasks: [], proof_type: 'goal', completed: true }],
+  }), [])
+
   return (
     <div className="app">
       <header className="header">
-        <h1>Skill Roadmap</h1>
-        {!roadmapId ? (
-          <div className="goal-form">
-            <input
-              type="text"
-              placeholder="e.g. Become a software engineer"
-              value={goal}
-              onChange={e => { setGoal(e.target.value); setError(null); }}
-              onKeyDown={e => e.key === 'Enter' && generateRoadmap()}
-            />
-            <button onClick={generateRoadmap} disabled={loading}>
-              {loading ? 'Generating…' : 'Generate roadmap'}
-            </button>
-            {error && <p className="error-message">{error}</p>}
-          </div>
-        ) : (
+        <h1>WayFinder</h1>
+        {roadmapId && roadmap && (
           <div className="header-actions">
-            <span className="goal-label">{roadmap?.goal}</span>
+            {/*<span className="goal-label">{roadmap?.goal}</span>*/}
             <button onClick={() => { setRoadmapId(null); setRoadmap(null); setError(null); setSelectedNodeId(null); setShowJourney(false); }}>New roadmap</button>
             {allComplete && (
               <button className="journey-btn" onClick={() => setShowJourney(true)}>View journey</button>
@@ -98,7 +88,21 @@ export default function App() {
         )}
       </header>
 
-      {roadmapId && roadmap && roadmap?.nodes?.length > 0 && (
+      {!roadmapId ? (
+        <main className="main">
+          <div className="canvas-wrap">
+            <RoadmapCanvas
+              roadmap={stubRoadmap}
+              selectedNodeId={null}
+              onSelectNode={() => {}}
+              onGenerateGoal={generateRoadmap}
+              loading={loading}
+              error={error}
+              preRoadmapMode
+            />
+          </div>
+        </main>
+      ) : roadmapId && roadmap && roadmap?.nodes?.length > 0 && (
         <>
           {showJourney ? (
             <JourneySlideshow

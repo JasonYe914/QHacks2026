@@ -45,12 +45,12 @@ export function NodePanel({ node, roadmapId, onProofSubmitted, onClose }) {
         </ul>
       </section>
 
-      {!node.completed && (
+      {!node.id?.endsWith('-start') && (
         <ProofForm
           nodeId={node.id}
-          proofType={node.proof_type}
           roadmapId={roadmapId}
           onSubmitted={handleProofSubmit}
+          proofs={proofs}
         />
       )}
 
@@ -69,7 +69,12 @@ export function NodePanel({ node, roadmapId, onProofSubmitted, onClose }) {
                   <a href={p.value} target="_blank" rel="noopener noreferrer">{p.value}</a>
                 )}
                 {p.proof_type === 'reflection' && <span>{p.value}</span>}
-                {p.file_path && (
+                {p.proof_type === 'photo' && p.file_path && (
+                  <a href={`/api/uploads/${p.file_path}`} target="_blank" rel="noopener noreferrer" className="proof-photo-link">
+                    <img src={`/api/uploads/${p.file_path}`} alt="Proof" className="proof-photo-thumb" />
+                  </a>
+                )}
+                {p.file_path && p.proof_type !== 'photo' && (
                   <a href={`/api/uploads/${p.file_path}`} target="_blank" rel="noopener noreferrer">View file</a>
                 )}
               </li>
