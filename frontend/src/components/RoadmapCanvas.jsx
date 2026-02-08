@@ -10,8 +10,9 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { RoadmapNode } from './RoadmapNode'
+import { GoalInputNode } from './GoalInputNode'
 
-const nodeTypes = { roadmap: RoadmapNode }
+const nodeTypes = { roadmap: RoadmapNode, start: GoalInputNode }
 
 const NODE_WIDTH = 220
 const NODE_HEIGHT = 100
@@ -70,7 +71,7 @@ function computeHorizontalTreeLayout(nodes) {
   return positions
 }
 
-function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode }) {
+function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode, onGenerateGoal, loading, error, preRoadmapMode }) {
   const completedIds = useMemo(() => new Set(roadmap.nodes.filter(n => n.completed).map(n => n.id)), [roadmap.nodes])
   const unlockedIds = useMemo(() => {
     const set = new Set()
@@ -86,18 +87,23 @@ function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode }) {
   const initialNodes = useMemo(() => {
     return roadmap.nodes.map((n) => {
       const pos = layoutPositions[n.id] ?? { x: 0, y: 0 }
+      const isStart = n.id === 'start' || n.id?.endsWith('-start')
       return {
         id: n.id,
-        type: 'roadmap',
+        type: isStart ? 'start' : 'roadmap',
         position: pos,
-        data: {
-          title: n.title,
-          completed: n.completed,
-          locked: !unlockedIds.has(n.id),
-        },
+        data: isStart && preRoadmapMode
+          ? { isPreRoadmap: true, onGenerate: onGenerateGoal, loading, error }
+          : isStart
+            ? { title: n.title }
+            : {
+                title: n.title,
+                completed: n.completed,
+                locked: !unlockedIds.has(n.id),
+              },
       }
     })
-  }, [roadmap.nodes, unlockedIds, layoutPositions])
+  }, [roadmap.nodes, unlockedIds, layoutPositions, onGenerateGoal, loading, error, preRoadmapMode])
 
   const initialEdges = useMemo(() => {
     return roadmap.nodes.flatMap((n) =>
@@ -117,8 +123,9 @@ function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode }) {
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges])
 
   const onNodeClick = useCallback((_, node) => {
+    if (node.type === 'start' && node.data?.isPreRoadmap) return
     const data = node.data
-    if (data.locked) return
+    if (data?.locked) return
     onSelectNode(node.id)
   }, [onSelectNode])
 
@@ -140,7 +147,7 @@ function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode }) {
     >
       <Background color="var(--border)" gap={16} />
       <Controls />
-      <MiniMap nodeColor={(n) => (n.data.completed ? 'var(--completed)' : n.data.locked ? 'var(--unlocked)' : 'var(--bg-node)')} />
+      <MiniMap nodeColor={(n) => (n.type === 'start' ? 'var(--bg-node)' : n.data.completed ? 'var(--completed)' : n.data.locked ? 'var(--unlocked)' : 'var(--bg-node)')} />
       {/*}
       <Panel position="top-left">
         <span className="canvas-hint">Pan, zoom, drag nodes. Click unlocked node to open details.</span>
@@ -149,7 +156,7 @@ function RoadmapCanvasInner({ roadmap, selectedNodeId, onSelectNode }) {
   )
 }
 
-export function RoadmapCanvas({ roadmap, selectedNodeId, onSelectNode }) {
+export function RoadmapCanvas({ roadmap, selectedNodeId, onSelectNode, onGenerateGoal, loading, error, preRoadmapMode }) {
   return (
     <ReactFlowProvider>
       <div style={{ width: '100%', height: '100%' }}>
@@ -157,6 +164,10 @@ export function RoadmapCanvas({ roadmap, selectedNodeId, onSelectNode }) {
           roadmap={roadmap}
           selectedNodeId={selectedNodeId}
           onSelectNode={onSelectNode}
+          onGenerateGoal={onGenerateGoal}
+          loading={loading}
+          error={error}
+          preRoadmapMode={preRoadmapMode}
         />
       </div>
     </ReactFlowProvider>
